@@ -1,0 +1,21 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pools</title>
+</head>
+<body>
+    {% if msg %}
+    <p>{{msg}}</p>
+    {% endif %}
+    <p>this is the pool details page</p>
+    <form action="{% url 'pool:add' %}">
+        <button type="submit">add pool</button>
+    </form>
+    <form action="{% url 'pool:remove' %}">
+        <button type="submit">remove pool</button>
+    </form>
+</body>
+</html>

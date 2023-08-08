@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>remove</title>
+</head>
+<body>
+    <form action="{% url 'pool:remove' %}" method="post">{% csrf_token %}
+        <input type="text" name="pvpath" placeholder="Your pv path">
+        <input type="text" name="vgname" placeholder="Your vg name">
+        <button type="submit">submit</button>
+    </form>
+    
+</body>
+</html>
