@@ -7,13 +7,25 @@ def vgs():
     return str(subprocess.Popen('vgs' , stdout=subprocess.PIPE , shell=True).communicate()[0]).split('\\n')
 
 def details(request):
-    """ 
+     
+    
     allDetails  = vgs()
     allDetails.pop()
+    print(allDetails)
+     
     if len(allDetails) == 0:
         return render(request , 'pool/pooldetails.html' , {'msg':'no pool'})
-    allDetails.remove(all[0])
-    """
+    allDetails.remove(allDetails[0])
+    for index in range(len(allDetails)):
+        temporarylist= list()
+        allDetails[index] = allDetails[index].strip().split(' ')
+        for dataIndex in range(len(allDetails[index])):
+            if allDetails[index][dataIndex] != '':
+                temporarylist.append(allDetails[index][dataIndex]) 
+        allDetails[index] = temporarylist.copy()
+
+    print(allDetails)
+
     return render(request , 'pool/pooldetails.html' )
 
 
