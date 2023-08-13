@@ -29,7 +29,7 @@ def remove(request , name):
     clientCount = client.count()
     if clientCount  == 0:
         msg ='sorry no such Host found!'
-
+        return render(request , 'Host/details.html' , {'msg':msg})
     for i in client:
         i.delete()
         msg = 'Host removed successfuly '

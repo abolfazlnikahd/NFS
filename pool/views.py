@@ -1,6 +1,6 @@
 from django.shortcuts import render
-import subprocess , shlex , os , re
-from scripts import *
+import subprocess , shlex , os , re , json
+from .models import VolumeGroup
 
 # Create your views here.
 def vgs():
@@ -11,7 +11,7 @@ def details(request):
     
     allDetails  = vgs()
     allDetails.pop()
-    print(allDetails)
+    #print(allDetails)
      
     if len(allDetails) == 0:
         return render(request , 'pool/pooldetails.html' , {'msg':'no pool'})
@@ -23,10 +23,12 @@ def details(request):
             if allDetails[index][dataIndex] != '':
                 temporarylist.append(allDetails[index][dataIndex]) 
         allDetails[index] = temporarylist.copy()
+        response = json.dumps(allDetails)
 
-    print(allDetails)
 
-    return render(request , 'pool/pooldetails.html' )
+    #print(allDetails)
+
+    return render(request , 'pool/pooldetails.html' , {'context':response})
 
 
 
@@ -56,6 +58,8 @@ def addpool(request):
                     return render(request , 'pool/pooldetails.html',{'msg':'you dont have a usable disk'})
                 elif pvcreate == 0:
                     if os.system(f'vgcreate {vgname} {available[i]}') == 0:
+                        db = VolumeGroup(PvPath = available[i] , VgName = vgname)
+                        db.save()
                         return render(request , 'pool/pooldetails.html',{'msg':'pool successfuly created'})
                     os.system(f'pvremove {available[i]}')
                     return render(request , 'pool/pooldetails.html',{'msg':'name error'})
@@ -86,6 +90,9 @@ def remove(request):
         #start deleting
         if os.system(f'vgremove {vgname}') == 0:
             if os.system(f'pvremove {pvpath}') == 0:
+                db = VolumeGroup.objects.filter(VgName = vgname)
+                for i in db:
+                    i.delete()
                 return render(request , 'pool/pooldetails.html' , {'msg':'pool successfuly deleted'})
             os.system(f'vgcreate {vgname}')
             return render(request , 'pool/pooldetails.html' , {'msg':'pool not deleted'})

@@ -1,4 +1,6 @@
 import subprocess , shlex , re , json
+from models import VolumeGroup
+
 
 """
 def addpool():
@@ -74,7 +76,7 @@ def an():
     
     print((allDetails))
 
-an()
+
 
 
 """
@@ -137,3 +139,6 @@ print(volumegs)
  {vgname:name , pvnumber:int , pvpath:list , lvnumber:int , lvnames:list names , vsize:int , vfree:int } """
 
 
+ob = VolumeGroup.objects.all()
+for i in ob:
+    print(i)

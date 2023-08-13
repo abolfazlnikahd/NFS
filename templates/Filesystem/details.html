@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>file systems</title>
+</head>
+<body>
+    {% if msg %}
+    <p>{{msg}}</p>
+    {% endif %}
+    {% if context %}
+        {% for object in context %}
+          <form action="{% url 'Filesystem:remove' lvname=object %}"><p>{{object}}</p><button type="submit">remove</button></body></form>  
+        {% endfor %}
+    {% endif %}
+    <p>this is the file system details page</p>
+    <form action="{% url 'Filesystem:add' %}">
+        <button type="submit">add</button>
+    </form>
+    
+</body>
+</html>
