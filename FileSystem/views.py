@@ -1,22 +1,46 @@
 from django.shortcuts import render
 from pool.models import VolumeGroup
 from .models import FileSystem
-import os 
+import os , subprocess , json
 
 
 
 #---------------------------------------------- details ----------------------------------------------#
 
 def details(request):
-    ob = FileSystem.objects.all()
+    all = str(subprocess.Popen('lvdisplay' , stdout=subprocess.PIPE , shell=True).communicate()).split('--- Logical volume ---')
+    all.remove(all[0])
+    responseDict = dict()
+    LvNumber = 1
+    for vg in all:
+        vg = vg.split('\\n')
+        temporaryList = list()
+        for details in vg :
+            if 'LV Name' in details:
+                temporaryList.append(details[25::])
+            if 'VG Name' in details:
+                temporaryList.append(details[25::])
+            if 'LV Size' in details:
+                temporaryList.append(details[25::])
+            if 'LV Status' in details:
+                temporaryList.append(details[25::])
+
+        responseDict[f'lv-{LvNumber}'] = ','.join(temporaryList)
+        LvNumber += 1
+        temporaryList.clear()
+    #print(responseDict)
     
-    return render(request , 'Filesystem/details.html' , {'context' : ob})
+    return render(request , 'Filesystem/details.html' , {'context' : json.dumps(responseDict)})
 
 
 
 
 #---------------------------------------------- add -----------------------------------------------#
 def add(request):
+    pools = VolumeGroup.objects.all()
+    if pools.count() == 0:
+        return render(request , 'Filesystem/details.html' , {'msg':'you dont have a pool pleas create pool first'})
+
     if request.method == 'POST':
         name = request.POST.get('name')
         pool = request.POST.get('pool')
@@ -40,20 +64,23 @@ def add(request):
         
         return render(request , 'Filesystem/details.html' , {'msg':'file system created successfuly'})
     ########
-    return render(request , 'Filesystem/add.html')
+    
+    return render(request , 'Filesystem/add.html' , {'context':pools})
 
 
 #--------------------------------------------- remove ----------------------------------------------#
 
 def remove(request , lvname):
-    lv = FileSystem.objects.filter(fileSystemName = lvname)
-    for i in lv:
-        if i.NfsShare != None:
-            return render(request , 'Filesystem/details.html' , {'msg':'file system contain a nfs share'})
-        
-        os.system(f'wipefs -a {i.lvpath}')
-        os.system(f'yes | lvremove {i.lvpath}')
-
-        lv.delete()
-        return render(request , 'Filesystem/details.html' , {'msg':'file system removed successfuly'})
+    lv = FileSystem.objects.get(fileSystemName = lvname)
     
+    if lv.NfsShare == 'NfsShare.NfsShare.None':
+        return render(request , 'Filesystem/details.html' , {'msg':'file system contain a nfs share'})
+        
+    os.system(f'wipefs -a {lv.lvpath}')
+    os.system(f'yes | lvremove {lv.lvpath}')
+
+    lv.delete()
+    return render(request , 'Filesystem/details.html' , {'msg':'file system removed successfuly'})
+    
+
+

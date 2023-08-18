@@ -8,13 +8,13 @@
 </head>
 <body>
     {% if msg %}
-    <p>{{msg}}</p>
+        <p>{{msg}}</p>
     {% endif %}
     {% if context %}
-        {% for object in context %}
-          <form action="{% url 'Filesystem:remove' lvname=object %}"><p>{{object}}</p><button type="submit">remove</button></body></form>  
-        {% endfor %}
+        {{context}}
     {% endif %}
+                <form action="" method="post">{% csrf_token %}<input type="text" , name="lvname"><button type="submit">remove</button></body></form>  
+
     <p>this is the file system details page</p>
     <form action="{% url 'Filesystem:add' %}">
         <button type="submit">add</button>

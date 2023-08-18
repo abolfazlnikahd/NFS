@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pool',
     'Host',
-    'FileSystem'
+    'FileSystem',
+    'NfsShare'
 ]
 
 MIDDLEWARE = [

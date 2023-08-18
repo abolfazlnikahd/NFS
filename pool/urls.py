@@ -6,5 +6,5 @@ app_name = 'pool'
 urlpatterns = [
     path('', details , name='details'),
     path('add' , addpool , name='add' ),
-    path('remove' , remove , name='remove')
+    path('<str:vgname>/remove' , remove , name='remove')
 ]

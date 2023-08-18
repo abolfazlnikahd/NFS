@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFS Share</title>
+</head>
+<body>
+    
+    
+    <form action="{% url 'NfsShare:add' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="folderName" placeholder="Folder Name">
+        <input type="text" name="pool" placeholder={{context}}>
+        <input type="text" name="fileSystem" placeholder="File System">
+        <input type="text" name="host" placeholder="Host">
+        <button type="submit">submit</button>
+    </form>
+</body>
+</html>

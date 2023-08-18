@@ -6,6 +6,7 @@ from .models import VolumeGroup
 def vgs():
     return str(subprocess.Popen('vgs' , stdout=subprocess.PIPE , shell=True).communicate()[0]).split('\\n')
 
+#---------------------------------------------details--------------------------------------------#
 def details(request):
      
     
@@ -16,6 +17,12 @@ def details(request):
     if len(allDetails) == 0:
         return render(request , 'pool/pooldetails.html' , {'msg':'no pool'})
     allDetails.remove(allDetails[0])
+    responsedict = dict()
+    flag = 1
+    for vgindex in range(len(allDetails)):
+        responsedict[f'vg-{flag}'] = allDetails[vgindex]
+        flag += 1
+    """ 
     for index in range(len(allDetails)):
         temporarylist= list()
         allDetails[index] = allDetails[index].strip().split(' ')
@@ -24,14 +31,15 @@ def details(request):
                 temporarylist.append(allDetails[index][dataIndex]) 
         allDetails[index] = temporarylist.copy()
         response = json.dumps(allDetails)
+    """
+
+    responsedict = json.dumps(responsedict)
+
+    return render(request , 'pool/pooldetails.html' ,{'context':responsedict})
 
 
-    #print(allDetails)
 
-    return render(request , 'pool/pooldetails.html' , {'context':response})
-
-
-
+#---------------------------------------------add------------------------------------------#
 
 
 def addpool(request):
@@ -66,36 +74,24 @@ def addpool(request):
                 i+=1
     return render(request , 'pool/add.html')
 
-def remove(request):
-    if request.method == 'POST':
-        vgname = request.POST.get('vgname')
-        pvpath = request.POST.get('pvpath')
 
-        #start finding volume groups name and number of logical volume of them
-        allVolumeGroupDetails = vgs()
-        allVolumeGroupDetails.pop()
-        allVolumeGroupDetails.remove(allVolumeGroupDetails[0])
+#---------------------------------------------remove-------------------------------------------#
 
-        VGnames = dict()
-        for details in allVolumeGroupDetails:
-            splitedListOfDetails = str(details).strip().split(' ')
-            VGnames[splitedListOfDetails[0]] = int(splitedListOfDetails[6])
-        #end finding
+def remove(request , vgname):
 
-        #start checking vg want to remove
-        if VGnames[vgname] != 0:
-            return render(request , 'pool/pooldetails.html' , {'msg':'your pool contain a file system please rmeove filesystem dirst'})
-        #end checking
 
+        query = VolumeGroup.objects.get(VgName = vgname)
+        pvpath = query.PvPath
+        if query.FileSystem == 'FileSystem.FileSystem.None':
+            return render(request , 'pool/pooldetails.html' , {'msg':'your pool contain a file system'})
         #start deleting
         if os.system(f'vgremove {vgname}') == 0:
             if os.system(f'pvremove {pvpath}') == 0:
-                db = VolumeGroup.objects.filter(VgName = vgname)
-                for i in db:
-                    i.delete()
+                db = VolumeGroup.objects.get(VgName = vgname)
+                db.delete()
                 return render(request , 'pool/pooldetails.html' , {'msg':'pool successfuly deleted'})
             os.system(f'vgcreate {vgname}')
             return render(request , 'pool/pooldetails.html' , {'msg':'pool not deleted'})
         return render(request , 'pool/pooldetails.html' , {'msg':'pool not deleted'})
         #end deleting
-    return render(request , 'pool/remove.html')
+    

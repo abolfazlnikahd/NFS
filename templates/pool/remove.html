@@ -7,7 +7,6 @@
 </head>
 <body>
     <form action="{% url 'pool:remove' %}" method="post">{% csrf_token %}
-        <input type="text" name="pvpath" placeholder="Your pv path">
         <input type="text" name="vgname" placeholder="Your vg name">
         <button type="submit">submit</button>
     </form>
