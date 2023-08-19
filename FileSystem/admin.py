@@ -7,4 +7,4 @@ from .models import FileSystem
 @admin.register(FileSystem)
 class FileSystemAdmin(admin.ModelAdmin):
     empty_value_display = "-empty-"
-    list_display = ['id' , 'fileSystemName']
+    list_display = ['fileSystemName' , 'lvpath']

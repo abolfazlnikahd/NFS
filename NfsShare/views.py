@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 import os 
 from pool.models import VolumeGroup
@@ -18,8 +19,12 @@ def addrolback(nfspath):
 
 def details(request):
     details = NfsShare.objects.all()
+    responsedict = dict()
+    nfsnumber = 1
+    for i in details:
+        responsedict[f'NFS-{nfsnumber}'] = str(i.Name) +','+str(i.NasServer) +','+ str(i.filesystem_set.all()[0]) +','+ str(i.Host) +','+ str(i.mountPoint)
 
-    return render(request , 'NfsShare/details.html' , {'context':details})
+    return render(request , 'NfsShare/details.html' , {'context':json.dumps(responsedict)})
 
 
 
