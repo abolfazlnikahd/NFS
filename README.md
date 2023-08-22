@@ -31,8 +31,9 @@ This project have to run on **ubuntu** also as a **root user**.
 
 # Api's
 
-## POOL API's
+### POOL API's
 
-**/polls**
-it will show you all your pools details
+##### /polls
+it will show you all your pools details.
+![Alt text](Reademe_images/Untitled.jpeg)
 
