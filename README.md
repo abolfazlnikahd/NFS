@@ -33,7 +33,49 @@ This project have to run on **ubuntu** also as a **root user**.
 
 1. ### POOL API's
 
-- ##### /polls
-    it will show you all your pools details.
+    - ##### /polls
+        it will show you all your pools details.
+
+    - ##### /pools/add
+        it will open a new page for you to create a new pool.
+
+    - ##### /pools/pool name/remove
+        this api remvoe the pool you want.
 
 
+
+2. ### FILE SYSTEM API's
+    - ##### /Filesystems
+        it will show you all your file systems details.
+
+    - ##### /Filesystems/add
+        it will open a new page for you to create a new file system.
+
+    - ##### /Filesystems/filesystem name/remove
+        this api remvoe the pool you want.
+
+
+
+3. ### HOST API's
+    - ##### /Hosts
+        it will show you all your hosts details.
+
+    - ##### /Hosts/add
+        it will open a new page for you to create a new host.
+
+    - ##### /Host/host name/remove
+        this api remvoe the pool you want.
+
+
+
+
+
+4. ### NFS SHARE API's
+    - ##### /NfsShares
+        it will show you all your nfs shares details.
+
+    - ##### /NfsShares/add
+        it will open a new page for you to create a new nfs share.
+        
+    - ##### /NfsShares/nfs share name/remove
+        this api remvoe the pool you want.
