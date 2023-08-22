@@ -34,6 +34,6 @@ This project have to run on **ubuntu** also as a **root user**.
 1. ### POOL API's
 
 - ##### /polls
-it will show you all your pools details.
+    it will show you all your pools details.
 
 
