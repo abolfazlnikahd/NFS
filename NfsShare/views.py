@@ -1,10 +1,10 @@
-import json
-from django.shortcuts import render
-import os 
+import json , os
+from django.shortcuts import render , HttpResponse
 from pool.models import VolumeGroup
 from FileSystem.models import FileSystem
 from Host.models import Host
 from .models import NfsShare
+
 # Create your views here.
 
 def addrolback(nfspath):
@@ -24,7 +24,7 @@ def details(request):
     for i in details:
         responsedict[f'NFS-{nfsnumber}'] = str(i.Name) +','+str(i.NasServer) +','+ str(i.filesystem_set.all()[0]) +','+ str(i.Host) +','+ str(i.mountPoint)
 
-    return render(request , 'NfsShare/details.html' , {'context':json.dumps(responsedict)})
+    return HttpResponse(status = 200)
 
 
 
@@ -54,30 +54,30 @@ def add(request):
                                     if os.system('ufw enable') == 0:
                                         db = NfsShare(Name = folderName , mountPoint = folderpath , Host = Host.objects.get(Name = host))
                                         db.save()
-                                        return render(request , 'NfsShare/details.html' , {'msg':'your NFS share successfuly crated'})
+                                        return HttpResponse(status = 201)
                                     addrolback(folderpath)
-                                    return render(request , 'NfsShare/details.html' , {'msg':'nfs share did not created'})
+                                    return HttpResponse(status = 500)
                                 addrolback(folderpath)
-                                return render(request , 'NfsShare/details.html' , {'msg':'nfs share did not created'})
+                                return HttpResponse(status = 500)
                             addrolback(folderpath)
-                            return render(request , 'NfsShare/details.html' , {'msg':'nfs share did not created'})
+                            return HttpResponse(status = 500)
                         addrolback(folderpath)
-                        return render(request , 'NfsShare/details.html' , {'msg':'nfs share did not created'})
+                        return HttpResponse(status = 500)
                     os.system(f'umount {folderpath}')
                     os.system(f'rm -r {folderpath}')
-                    return render(request , 'NfsShare/details.html' , {'msg':'nfs share did not created'})
+                    return HttpResponse(status = 500)
                 os.system(f'rm -r {folderpath}')
-                return render(request , 'NfsShare/details.html' , {'msg':'nfs share did not created'})
+                return HttpResponse(status = 500)
             os.system(f'rm -r {folderpath}')
-            return render(request , 'NfsShare/details.html' , {'msg':'nfs share did not created'})
+            return HttpResponse(status = 500)
         #print(folderName + poolName + fileSystemName + host)
-        return render(request , 'NfsShare/details.html')
+        return HttpResponse(status = 500)
     
     
-    #check pool
+    #check pool  ''
     pool_filesystem = VolumeGroup.objects.all()
     if pool_filesystem.count() == 0:
-        return render(request , 'NfsShare/details.html' , {'msg':'you dont have any pool pleas create a pool and file system first'})
+        return HttpResponse("<p>you dont have any pool pleas create a pool and file system first</p>")
     
     #check file system 
     getResponse = dict()
@@ -90,15 +90,15 @@ def add(request):
         getResponse[pool.VgName] = ','.join(temproryList)
 
     if getResponse == {}:
-        return render(request , 'NfsShare/details.html' , {'msg':'you dont have any filesystem pleas create file system first'})
+        return  HttpResponse("<p>you dont have any filesystem pleas create file system first</p>")   
 
-    #check Host 
+    #check Host   you dont have any host pleas create host
     if Host.objects.all().count() == 0:
-        return render(request , 'NfsShare/details.html' , {'msg':'you dont have any host pleas create host'})
+        return  HttpResponse("<p>you dont have any host pleas create host</p>")
 
 
 
-    return render(request , 'NfsShare/add.html' , {'context' : getResponse})
+    return HttpResponse(status = 200)
 
 
 
@@ -115,7 +115,7 @@ def remove(request , nfsname):
     os.system('systemctl restart nfs-kernel-server')
     db = NfsShare.objects.get(Name = nfsname)
     db.delete()
-    return render(request , 'Nfsshare/details.html' , {'msg':'NFS share successfuly deleted'})
+    return HttpResponse(status = 200)
 
 
 

@@ -1,13 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render , HttpResponse
 from .models import *
 
 # Create your views here.
 
+#-------------------------------------details--------------------------------#
 def details(request):
     detail = Host.objects.all()
     
-    return render(request , 'Host/details.html' , {'detail':detail})
+    return HttpResponse(status = 200)
 
+
+
+#-------------------------------------add-----------------------------------#
 def addHost(request):
     if request.method == 'POST':
         hostName= request.POST.get('hostName')
@@ -19,18 +23,19 @@ def addHost(request):
         except:
             msg = 'name or ipaddress alredy used pleas try again'
 
-        return render(request , 'Host/details.html' , {'msg':msg})
+        return HttpResponse(f"<p>{msg}</p>")
         
 
-    return render(request , 'Host/add.html')
+    return HttpResponse(status = 200)
 
+
+#-------------------------------------remove---------------------------------#
 def remove(request , name):
-    client = Host.objects.filter(Name = name)
+    client = Host.objects.get(Name = name)
     clientCount = client.count()
     if clientCount  == 0:
         msg ='sorry no such Host found!'
-        return render(request , 'Host/details.html' , {'msg':msg})
-    for i in client:
-        i.delete()
-        msg = 'Host removed successfuly '
-    return render(request , 'Host/details.html' , {'msg':msg})
+        return HttpResponse(f"<p>{msg}</p>")
+    client.delete()
+    msg = 'Host removed successfuly '
+    return HttpResponse(f"<p>{msg}</p>")

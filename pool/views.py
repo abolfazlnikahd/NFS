@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , HttpResponse
 import subprocess , shlex , os , re , json
 from .models import VolumeGroup
 
@@ -35,7 +35,7 @@ def details(request):
 
     responsedict = json.dumps(responsedict)
 
-    return render(request , 'pool/pooldetails.html' ,{'context':responsedict})
+    return HttpResponse(status = 200)
 
 
 
@@ -57,25 +57,25 @@ def addpool(request):
         for i in all:
             if not str(i[-1]).isnumeric():
                 available.append(i)
-        #end finding available disk
+        #end finding available disk   
         if len(available) > 0:
             i = 0
             while i < len(available):
                 pvcreate = os.system(f'pvcreate {available[i]}')
                 if i == len(available)-1 and pvcreate != 0:
-                    return render(request , 'pool/pooldetails.html',{'msg':'you dont have a usable disk'})
+                    return HttpResponse("<p>you dont have a usable disk</p>")
                 elif pvcreate == 0:
                     if os.system(f'vgcreate {vgname} {available[i]}') == 0:
                         db = VolumeGroup(PvPath = available[i] , VgName = vgname)
                         db.save()
-                        return render(request , 'pool/pooldetails.html',{'msg':'pool successfuly created'})
+                        return HttpResponse("<p>pool successfuly created</p>")
                     os.system(f'pvremove {available[i]}')
-                    return render(request , 'pool/pooldetails.html',{'msg':'name error'})
+                    return HttpResponse("<p>name error</p>")
                 i+=1
-    return render(request , 'pool/add.html')
+    return HttpResponse(status=201)
 
 
-#---------------------------------------------remove-------------------------------------------#
+#---------------------------------------------remove-------------------------------------------#   
 
 def remove(request , vgname):
 
@@ -83,15 +83,15 @@ def remove(request , vgname):
         query = VolumeGroup.objects.get(VgName = vgname)
         pvpath = query.PvPath
         if query.FileSystem == 'FileSystem.FileSystem.None':
-            return render(request , 'pool/pooldetails.html' , {'msg':'your pool contain a file system'})
+            return HttpResponse("<p>your pool contain a file system</p>")
         #start deleting
         if os.system(f'vgremove {vgname}') == 0:
             if os.system(f'pvremove {pvpath}') == 0:
                 db = VolumeGroup.objects.get(VgName = vgname)
                 db.delete()
-                return render(request , 'pool/pooldetails.html' , {'msg':'pool successfuly deleted'})
+                return HttpResponse("<p>pool successfuly deleted</p>")  
             os.system(f'vgcreate {vgname}')
-            return render(request , 'pool/pooldetails.html' , {'msg':'pool not deleted'})
-        return render(request , 'pool/pooldetails.html' , {'msg':'pool not deleted'})
+            return HttpResponse("<p></p>")  
+        return HttpResponse("<p>pool not deleted</p>") 
         #end deleting
     

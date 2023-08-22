@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , HttpResponse
 from pool.models import VolumeGroup
 from .models import FileSystem
 import os , subprocess , json
@@ -30,7 +30,7 @@ def details(request):
         temporaryList.clear()
     #print(responseDict)
     
-    return render(request , 'Filesystem/details.html' , {'context' : json.dumps(responseDict)})
+    return HttpResponse(status = 200)
 
 
 
@@ -39,7 +39,7 @@ def details(request):
 def add(request):
     pools = VolumeGroup.objects.all()
     if pools.count() == 0:
-        return render(request , 'Filesystem/details.html' , {'msg':'you dont have a pool pleas create pool first'})
+        return HttpResponse("<p>you dont have a pool pleas create pool first</p>")
 
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -48,12 +48,12 @@ def add(request):
         ######## create lv
         lv = os.system(f'lvcreate -L {size}G -n {name} {pool}')
         if lv != 0:
-            return render(request , 'Filesystem/details.html' , {'msg':'this pool dont have free space you want'})
+            return HttpResponse("<p>this pool dont have free space you want</p>")
         ######## create filesystem
         mkfs = os.system(f'mkfs.ext4 /dev/{pool}/{name}')
         if mkfs != 0:
             os.system(f'lvremove /dev/{pool}/{name}')
-            return render(request , 'Filesystem/details.html' , {'msg':'file system didnt creat'})
+            return HttpResponse("<p>file system didnt creat</p>")
         ######## save in db
         fdb = FileSystem(fileSystemName = name,lvpath = f'/dev/{pool}/{name}')#add file system to filesystem table
         fdb.save()
@@ -62,10 +62,10 @@ def add(request):
             i.FileSystem.add(fdb)#add filesystem to volume group table
             i.save()
         
-        return render(request , 'Filesystem/details.html' , {'msg':'file system created successfuly'})
+        return HttpResponse("<p>file system created successfuly</p>")
     ########
     
-    return render(request , 'Filesystem/add.html' , {'context':pools})
+    return HttpResponse(status = 200)
 
 
 #--------------------------------------------- remove ----------------------------------------------#
@@ -74,13 +74,13 @@ def remove(request , lvname):
     lv = FileSystem.objects.get(fileSystemName = lvname)
     
     if lv.NfsShare == 'NfsShare.NfsShare.None':
-        return render(request , 'Filesystem/details.html' , {'msg':'file system contain a nfs share'})
+        return HttpResponse("<p>file system contain a nfs share</p>")
         
     os.system(f'wipefs -a {lv.lvpath}')
     os.system(f'yes | lvremove {lv.lvpath}')
 
     lv.delete()
-    return render(request , 'Filesystem/details.html' , {'msg':'file system removed successfuly'})
+    return HttpResponse(status=200)
     
 
 

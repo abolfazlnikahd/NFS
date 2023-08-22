@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS "Host_host" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "IpAddress" varchar(18) NOT NULL UNIQUE, "Name" varchar(50) NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS "pool_volumegroup" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "PvPath" text NOT NULL, "VgName" varchar(30) NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS "pool_volumegroup_FileSystem" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "volumegroup_id" bigint NOT NULL REFERENCES "pool_volumegroup" ("id") DEFERRABLE INITIALLY DEFERRED, "filesystem_id" bigint NOT NULL REFERENCES "FileSystem_filesystem" ("id") DEFERRABLE INITIALLY DEFERRED);
+CREATE UNIQUE INDEX "pool_volumegroup_FileSystem_volumegroup_id_filesystem_id_45b2ced2_uniq" ON "pool_volumegroup_FileSystem" ("volumegroup_id", "filesystem_id");
+CREATE INDEX "pool_volumegroup_FileSystem_volumegroup_id_96496ea4" ON "pool_volumegroup_FileSystem" ("volumegroup_id");
+CREATE INDEX "pool_volumegroup_FileSystem_filesystem_id_221c3de3" ON "pool_volumegroup_FileSystem" ("filesystem_id");
+CREATE TABLE IF NOT EXISTS "NfsShare_nfsshare" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "Name" varchar(25) NOT NULL, "mountPoint" varchar(100) NOT NULL, "Host_id" bigint NOT NULL UNIQUE REFERENCES "Host_host" ("id") DEFERRABLE INITIALLY DEFERRED, "NasServer" varchar(100) NULL);
+CREATE TABLE IF NOT EXISTS "FileSystem_filesystem" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "lvpath" varchar(100) NULL, "fileSystemName" varchar(25) NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS "FileSystem_filesystem_NfsShare" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "filesystem_id" bigint NOT NULL REFERENCES "FileSystem_filesystem" ("id") DEFERRABLE INITIALLY DEFERRED, "nfsshare_id" bigint NOT NULL REFERENCES "NfsShare_nfsshare" ("id") DEFERRABLE INITIALLY DEFERRED);
+CREATE UNIQUE INDEX "FileSystem_filesystem_NfsShare_filesystem_id_nfsshare_id_c5224914_uniq" ON "FileSystem_filesystem_NfsShare" ("filesystem_id", "nfsshare_id");
+CREATE INDEX "FileSystem_filesystem_NfsShare_filesystem_id_f6e28211" ON "FileSystem_filesystem_NfsShare" ("filesystem_id");
+CREATE INDEX "FileSystem_filesystem_NfsShare_nfsshare_id_bb32ad9f" ON "FileSystem_filesystem_NfsShare" ("nfsshare_id");
