@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'pool',
     'Host',
     'FileSystem',
-    'NfsShare'
+    'NfsShare',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
