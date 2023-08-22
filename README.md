@@ -35,4 +35,4 @@ This project have to run on **ubuntu** also as a **root user**.
 
 **/polls**
 it will show you all your pools details
-![/pools api ](Reademe_images/Untitled.jpeg)
+
