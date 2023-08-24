@@ -34,7 +34,7 @@ This project have to run on **ubuntu** also as a **root user**.
 1. ### POOL API's
 
     - ##### /polls
-        
+        it will show you all your pools detail.
         <img src="Reademe_images/pooldetails.png" alt="Alt text" title="it will show your all pools detail">
 
     - ##### /pools/add
@@ -47,7 +47,7 @@ This project have to run on **ubuntu** also as a **root user**.
 
 2. ### FILE SYSTEM API's
     - ##### /Filesystems
-        it will show you all your file systems details.
+        it will show you all your file systems detail.
 
     - ##### /Filesystems/add
         it will open a new page for you to create a new file system.
