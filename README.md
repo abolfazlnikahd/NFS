@@ -35,37 +35,52 @@ This project have to run on **ubuntu** also as a **root user**.
 
     - ##### /polls
         it will show you all your pools detail.
-        <img src="Reademe_images/pooldetails.png" alt="Alt text" title="it will show your all pools detail">
+        <img src="Reademe_images/pooldetails.png" alt="Alt text" >
 
     - ##### /pools/add
         it will open a new page for you to create a new pool.
+        <img src="Reademe_images/pooladd.png" alt="Alt text" >
 
     - ##### /pools/pool name/remove
         this api remvoe the pool you want.
-
+        <img src="Reademe_images/poolremove.png" alt="Alt text" >
+        
+        
+        **!!! if your pool contain a file system , it will not be deleted !!!**
+        <img src="Reademe_images/poolremoveerror.png" alt="Alt text" >
 
 
 2. ### FILE SYSTEM API's
     - ##### /Filesystems
         it will show you all your file systems detail.
+        <img src="Reademe_images/filesystemdetails.png" alt="Alt text" >
 
     - ##### /Filesystems/add
         it will open a new page for you to create a new file system.
+        <img src="Reademe_images/filesystemadd.png" alt="Alt text" >
 
     - ##### /Filesystems/filesystem name/remove
         this api remvoe the pool you want.
+        <img src="Reademe_images/filesystemremove.png" alt="Alt text" >
+
+
+        **!!! if your file system contain a NFS share , it will not be deleted !!!**
+        <img src="Reademe_images/filesystemremoveerror.png" alt="Alt text" >
 
 
 
 3. ### HOST API's
     - ##### /Hosts
         it will show you all your hosts details.
+        <img src="Reademe_images/hostdetails.png" alt="Alt text" >
 
     - ##### /Hosts/add
         it will open a new page for you to create a new host.
+        <img src="Reademe_images/hostadd.png" alt="Alt text" >
 
     - ##### /Host/host name/remove
         this api remvoe the pool you want.
+        <img src="Reademe_images/hostremove.png" alt="Alt text" >
 
 
 
@@ -74,11 +89,13 @@ This project have to run on **ubuntu** also as a **root user**.
 4. ### NFS SHARE API's
     - ##### /NfsShares
         it will show you all your nfs shares details.
+        <img src="Reademe_images/nfssharedetails.png" alt="Alt text" >
 
     - ##### /NfsShares/add
         it will open a new page for you to create a new nfs share.
+        <img src="Reademe_images/nfsshareadd.png" alt="Alt text" >
         
     - ##### /NfsShares/nfs share name/remove
         this api remvoe the pool you want.
+        <img src="Reademe_images/nfsshareremove.png" alt="Alt text" >
 
-[def]: Reademe_images/pooldetails.png
