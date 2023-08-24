@@ -1,4 +1,5 @@
 from django.shortcuts import render , HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from pool.models import VolumeGroup
 from .models import FileSystem
 import os , subprocess , json
@@ -30,12 +31,13 @@ def details(request):
         temporaryList.clear()
     #print(responseDict)
     
-    return HttpResponse(status = 200)
+    return HttpResponse(json.dumps(responseDict))
 
 
 
 
 #---------------------------------------------- add -----------------------------------------------#
+@csrf_exempt
 def add(request):
     pools = VolumeGroup.objects.all()
     if pools.count() == 0:
@@ -48,7 +50,7 @@ def add(request):
         ######## create lv
         lv = os.system(f'lvcreate -L {size}G -n {name} {pool}')
         if lv != 0:
-            return HttpResponse("<p>this pool dont have free space you want</p>")
+            return HttpResponse(f'<p>Logical Volume "{name}" already exists in volume group "{pool}"</p>')
         ######## create filesystem
         mkfs = os.system(f'mkfs.ext4 /dev/{pool}/{name}')
         if mkfs != 0:
@@ -73,14 +75,14 @@ def add(request):
 def remove(request , lvname):
     lv = FileSystem.objects.get(fileSystemName = lvname)
     
-    if lv.NfsShare == 'NfsShare.NfsShare.None':
+    if lv.NfsShare != 'NfsShare.NfsShare.None':
         return HttpResponse("<p>file system contain a nfs share</p>")
         
     os.system(f'wipefs -a {lv.lvpath}')
     os.system(f'yes | lvremove {lv.lvpath}')
 
     lv.delete()
-    return HttpResponse(status=200)
+    return HttpResponse("<p>file system successfuly removed</p>")
     
 
 

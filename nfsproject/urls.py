@@ -6,6 +6,6 @@ urlpatterns = [
     path('pools/' , include('pool.urls')),
     path('Hosts/' , include('Host.urls')),
     path('Filesystems/' , include('FileSystem.urls')),
-    path('NfsShares/' , include('NfsShare.urls'))
+    path('Nfsshares/' , include('NfsShare.urls'))
 
 ]

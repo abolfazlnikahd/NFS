@@ -1,4 +1,5 @@
 from django.shortcuts import render , HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 import subprocess , shlex , os , re , json
 from .models import VolumeGroup
 
@@ -7,6 +8,7 @@ def vgs():
     return str(subprocess.Popen('vgs' , stdout=subprocess.PIPE , shell=True).communicate()[0]).split('\\n')
 
 #---------------------------------------------details--------------------------------------------#
+
 def details(request):
      
     
@@ -15,7 +17,9 @@ def details(request):
     #print(allDetails)
      
     if len(allDetails) == 0:
-        return render(request , 'pool/pooldetails.html' , {'msg':'no pool'})
+        res = {'msg':"you don't have any pool"}
+        res = json.dumps(res)
+        return HttpResponse(res     )
     allDetails.remove(allDetails[0])
     responsedict = dict()
     flag = 1
@@ -34,14 +38,15 @@ def details(request):
     """
 
     responsedict = json.dumps(responsedict)
+    
 
-    return HttpResponse(status = 200)
+    return HttpResponse(responsedict)
 
 
 
 #---------------------------------------------add------------------------------------------#
 
-
+@csrf_exempt
 def addpool(request):
     if request.method == 'POST':
         vgname = request.POST.get('vgname')
@@ -72,7 +77,7 @@ def addpool(request):
                     os.system(f'pvremove {available[i]}')
                     return HttpResponse("<p>name error</p>")
                 i+=1
-    return HttpResponse(status=201)
+    return HttpResponse(status=200)
 
 
 #---------------------------------------------remove-------------------------------------------#   
@@ -82,7 +87,7 @@ def remove(request , vgname):
 
         query = VolumeGroup.objects.get(VgName = vgname)
         pvpath = query.PvPath
-        if query.FileSystem == 'FileSystem.FileSystem.None':
+        if query.FileSystem != 'FileSystem.FileSystem.None':
             return HttpResponse("<p>your pool contain a file system</p>")
         #start deleting
         if os.system(f'vgremove {vgname}') == 0:

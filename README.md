@@ -34,7 +34,8 @@ This project have to run on **ubuntu** also as a **root user**.
 1. ### POOL API's
 
     - ##### /polls
-        it will show you all your pools details.
+        
+        ![Screenshot][pooldetails.png]
 
     - ##### /pools/add
         it will open a new page for you to create a new pool.
@@ -79,3 +80,5 @@ This project have to run on **ubuntu** also as a **root user**.
         
     - ##### /NfsShares/nfs share name/remove
         this api remvoe the pool you want.
+
+[def]: Reademe_images/pooldetails.png

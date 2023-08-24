@@ -1,5 +1,6 @@
 import json , os
 from django.shortcuts import render , HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from pool.models import VolumeGroup
 from FileSystem.models import FileSystem
 from Host.models import Host
@@ -9,7 +10,7 @@ from .models import NfsShare
 
 def addrolback(nfspath):
     os.system(f'umount {nfspath}')
-    os.system(f"sed -i '/{nfspath}/d' /etc/exports ")
+    os.system('cp  /project/nfsproject/exportsbackup  /etc/exports')
     os.system(f'rm -r {nfspath}')
     os.system('exportfs -a')
     os.system('systemctl restart nfs-kernel-srver')
@@ -24,16 +25,18 @@ def details(request):
     for i in details:
         responsedict[f'NFS-{nfsnumber}'] = str(i.Name) +','+str(i.NasServer) +','+ str(i.filesystem_set.all()[0]) +','+ str(i.Host) +','+ str(i.mountPoint)
 
-    return HttpResponse(status = 200)
+    return HttpResponse(json.dumps(responsedict))
 
 
 
 #---------------------------------------------add---------------------------------------------------#
-
+@csrf_exempt
 def add(request):
     #default path : /NfsShares
     if request.method == 'POST':
         folderName  = request.POST.get('folderName')
+        if  NfsShare.objects.filter(Name = folderName).count() != 0:
+            return HttpResponse(f'<p>{folderName} is alredy used</p>')
         fileSystemName = request.POST.get('fileSystem')
         host = request.POST.get('host')
         server = request.POST.get('server') 
@@ -43,18 +46,20 @@ def add(request):
         hostIp = Host.objects.get(Name = host).IpAddress
 
         folderpath = f'/NfsShares/{folderName}'
-        os.system('cp /etc/expots /project/nfsproject/exportsbackup')
+        os.system('cp /etc/exports /project/nfsproject/exportsbackup')
         if os.system(f'mkdir -p {folderpath}') == 0:
             if os.system(f'chmod 770 {folderpath}') == 0:
                 if os.system(f'mount {fileSystemPath} {folderpath}') == 0:
-                    if os.system(f'echo "{folderpath} {hostIp}(rw,sync,no_subtree_check)" >> /etc/exports'):
+                    if os.system(f'echo "{folderpath} {hostIp}(rw,sync,no_subtree_check)" >> /etc/exports') == 0:
                         if os.system('exportfs -a') == 0:
                             if os.system('systemctl restart nfs-kernel-server') == 0:
                                 if os.system(f'ufw allow from {hostIp} to any port nfs') == 0:
                                     if os.system('ufw enable') == 0:
-                                        db = NfsShare(Name = folderName , mountPoint = folderpath , Host = Host.objects.get(Name = host))
+                                        db = NfsShare(Name = folderName , mountPoint = folderpath ,NasServer = server ,Host = Host.objects.get(Name = host))
                                         db.save()
-                                        return HttpResponse(status = 201)
+                                        FileSystem.objects.get(fileSystemName = fileSystemName).NfsShare.add(db)
+
+                                        return HttpResponse("<p>Nfs share successfuly created</p>",status = 201)
                                     addrolback(folderpath)
                                     return HttpResponse(status = 500)
                                 addrolback(folderpath)
@@ -107,16 +112,18 @@ def add(request):
 #---------------------------------------------remove-------------------------------------------------#
 
 def remove(request , nfsname):
-    nfspath = f'/NfsShares/{nfsname}'
-    os.system(f'umount {nfspath}')
-    os.system(f"sed -i '/{nfspath}/d' /etc/exports")
-    os.system(f'rm -r {nfspath}')
-    os.system('exportfs -a')
-    os.system('systemctl restart nfs-kernel-server')
-    db = NfsShare.objects.get(Name = nfsname)
-    db.delete()
-    return HttpResponse(status = 200)
-
+    try:
+        nfspath = f'/NfsShares/{nfsname}'
+        os.system(f'umount {nfspath}')
+        os.system(f"sed -i '/{nfsname}/d' /etc/exports")
+        os.system(f'rm -r {nfspath}')
+        os.system('exportfs -a')
+        os.system('systemctl restart nfs-kernel-server')
+        db = NfsShare.objects.get(Name = nfsname)
+        db.delete()
+        return HttpResponse(f"<p>{nfsname} successfuly removed </p>",status = 200)
+    except:
+        return HttpResponse(f"<p>{nfsname} does not exist </p>")
 
 
 

@@ -1,4 +1,7 @@
+import json
 from django.shortcuts import render , HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import *
 
 # Create your views here.
@@ -6,12 +9,17 @@ from .models import *
 #-------------------------------------details--------------------------------#
 def details(request):
     detail = Host.objects.all()
-    
-    return HttpResponse(status = 200)
+    flag = 1
+    responsedict = dict()
+    for i in detail:
+        responsedict[f'Host-{flag}']= str(i.Name) + '   ' +str(i.IpAddress)
+        flag += 1
+    return HttpResponse(json.dumps(responsedict))
 
 
 
 #-------------------------------------add-----------------------------------#
+@csrf_exempt
 def addHost(request):
     if request.method == 'POST':
         hostName= request.POST.get('hostName')
@@ -31,11 +39,10 @@ def addHost(request):
 
 #-------------------------------------remove---------------------------------#
 def remove(request , name):
-    client = Host.objects.get(Name = name)
-    clientCount = client.count()
-    if clientCount  == 0:
-        msg ='sorry no such Host found!'
+    try:
+        client = Host.objects.get(Name = name)
+        client.delete()
+        msg = 'Host removed successfuly '
         return HttpResponse(f"<p>{msg}</p>")
-    client.delete()
-    msg = 'Host removed successfuly '
-    return HttpResponse(f"<p>{msg}</p>")
+    except :
+        return HttpResponse('<p>Host does not exist</p>')
