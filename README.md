@@ -35,7 +35,7 @@ This project have to run on **ubuntu** also as a **root user**.
 
     - ##### /polls
         
-        ![pool details][Reademe_images/pooldetails.png]
+        <img src="Reademe_images/pooldetails.png" alt="Alt text" title="it will show your all pools detail">
 
     - ##### /pools/add
         it will open a new page for you to create a new pool.
