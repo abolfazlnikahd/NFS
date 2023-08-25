@@ -1,16 +1,43 @@
-from django.shortcuts import render , HttpResponse
+from django.shortcuts import render , HttpResponse , get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from pool.models import VolumeGroup
+from pool.views import validating_name
 from .models import FileSystem
 import os , subprocess , json
 
 
 
 #---------------------------------------------- details ----------------------------------------------#
+@csrf_exempt
+def full_details(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        pool = request.POST.get('pool')
+        size = request.POST.get('size')
 
-def details(request):
-    all = str(subprocess.Popen('lvdisplay' , stdout=subprocess.PIPE , shell=True).communicate()).split('--- Logical volume ---')
-    all.remove(all[0])
+        if validating_name(name) == False :
+            return HttpResponse(f'<p> {name} is incorrect </p>')
+        elif pool not in stringOfVolumeGroups():
+            print(stringOfVolumeGroups())
+            return HttpResponse(f'you dont have a pool with {pool} name ')
+        
+        ######## create lv
+        lvExitCode = os.system(f'lvcreate -L {size}G -n {name} {pool}')
+        if lvExitCode != 0:
+            return HttpResponse(f'<p>Logical Volume "{name}" already exists in volume group "{pool}"</p>')
+        ######## create filesystem
+        mkfsExitCode = os.system(f'mkfs.ext4 /dev/{pool}/{name}')
+        if mkfsExitCode != 0:
+            os.system(f'lvremove /dev/{pool}/{name}')
+            return HttpResponse("<p>file system didnt creat</p>")
+        ######## save in db
+
+        filesystem_db(name , pool)
+        
+        return HttpResponse("<p>file system created successfuly</p>")
+
+
+    all = lvdisplay_response_list()
     responseDict = dict()
     LvNumber = 1
     for vg in all:
@@ -36,53 +63,50 @@ def details(request):
 
 
 
-#---------------------------------------------- add -----------------------------------------------#
-@csrf_exempt
-def add(request):
-    pools = VolumeGroup.objects.all()
-    if pools.count() == 0:
-        return HttpResponse("<p>you dont have a pool pleas create pool first</p>")
-
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        pool = request.POST.get('pool')
-        size = request.POST.get('size')
-        ######## create lv
-        lv = os.system(f'lvcreate -L {size}G -n {name} {pool}')
-        if lv != 0:
-            return HttpResponse(f'<p>Logical Volume "{name}" already exists in volume group "{pool}"</p>')
-        ######## create filesystem
-        mkfs = os.system(f'mkfs.ext4 /dev/{pool}/{name}')
-        if mkfs != 0:
-            os.system(f'lvremove /dev/{pool}/{name}')
-            return HttpResponse("<p>file system didnt creat</p>")
-        ######## save in db
-        fdb = FileSystem(fileSystemName = name,lvpath = f'/dev/{pool}/{name}')#add file system to filesystem table
-        fdb.save()
-        db = VolumeGroup.objects.filter(VgName = pool)#file volume group 
-        for i in db:
-            i.FileSystem.add(fdb)#add filesystem to volume group table
-            i.save()
-        
-        return HttpResponse("<p>file system created successfuly</p>")
-    ########
-    
-    return HttpResponse(status = 200)
-
-
 #--------------------------------------------- remove ----------------------------------------------#
+@csrf_exempt
+def specifies_details(request , **kwargs):
+    if request.method == 'DELETE':
+        lvname = kwargs['lvname']
+        if validating_name(lvname) == False :
+            return HttpResponse(f'<p> {lvname} is incorrect </p>')
 
-def remove(request , lvname):
-    lv = FileSystem.objects.get(fileSystemName = lvname)
-    
-    if lv.NfsShare != 'NfsShare.NfsShare.None':
-        return HttpResponse("<p>file system contain a nfs share</p>")
-        
-    os.system(f'wipefs -a {lv.lvpath}')
-    os.system(f'yes | lvremove {lv.lvpath}')
+        lv = get_object_or_404(FileSystem,fileSystemName = lvname)
+        if lv.NfsShare.all().count() != 0:
+            return HttpResponse("<p>file system contain a nfs share</p>")
+            
+        os.system(f'wipefs -a {lv.lvpath}')
+        os.system(f'yes | lvremove {lv.lvpath}')
 
-    lv.delete()
-    return HttpResponse("<p>file system successfuly removed</p>")
-    
+        lv.delete()
 
+        return HttpResponse("<p>file system successfuly removed</p>")
+    return HttpResponse(status = 200)
+#-----------------------------------------------------------------------------------------------------#
 
+def lvdisplay_response_list():
+    all = str(subprocess.Popen('lvdisplay' , stdout=subprocess.PIPE , shell=True).communicate()).split('--- Logical volume ---')
+    all.remove(all[0])
+    return all
+
+def filesystem_db(lvname , vgname):
+        fdb = FileSystem(fileSystemName = lvname,lvpath = f'/dev/{vgname}/{lvname}')#add file system to filesystem table
+        fdb.save()
+
+        db = VolumeGroup.objects.get(VgName = vgname)#file volume group 
+        db.FileSystem.add(fdb)#add filesystem to volume group table
+        db.save()    
+
+def stringOfVolumeGroups():
+    db = VolumeGroup.objects.all()
+    temprorylist = list()
+    for vg in db :
+        temprorylist.append(vg.VgName)
+    return ','.join(temprorylist)
+
+def stringOfLogicalVolumes():
+    db = FileSystem.objects.all()
+    temprorylist = list()
+    for lv in db:
+        temprorylist.append(lv.fileSystemName)
+    return ','.join(temprorylist)

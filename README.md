@@ -33,69 +33,70 @@ This project have to run on **ubuntu** also as a **root user**.
 
 1. ### POOL API's
 
-    - ##### /polls
+    - ##### /Polls 
         it will show you all your pools detail.
         <img src="Reademe_images/pooldetails.png" alt="Alt text" >
 
-    - ##### /pools/add
+    - ##### /Pools/  
         it will open a new page for you to create a new pool.
-        <img src="Reademe_images/pooladd.png" alt="Alt text" >
+        <img src="Reademe_images/poolAdd.png" alt="Alt text" >
 
-    - ##### /pools/pool name/remove
+    - ##### /Pools/<pool name> 
         this api remvoe the pool you want.
-        <img src="Reademe_images/poolremove.png" alt="Alt text" >
+        <img src="Reademe_images/poolRemove.png" alt="Alt text" >
         
         
-        **!!! if your pool contain a file system , it will not be deleted !!!**
-        <img src="Reademe_images/poolremoveerror.png" alt="Alt text" >
 
 
 2. ### FILE SYSTEM API's
-    - ##### /Filesystems
+    - ##### /Filesystems 
         it will show you all your file systems detail.
         <img src="Reademe_images/filesystemdetails.png" alt="Alt text" >
 
-    - ##### /Filesystems/add
+    - ##### /Filesystems/  
         it will open a new page for you to create a new file system.
-        <img src="Reademe_images/filesystemadd.png" alt="Alt text" >
+        <img src="Reademe_images/filesystemAdd.png" alt="Alt text" >
 
-    - ##### /Filesystems/filesystem name/remove
+    - ##### /Filesystems/<filesystem name>  
         this api remvoe the pool you want.
-        <img src="Reademe_images/filesystemremove.png" alt="Alt text" >
+        <img src="Reademe_images/filesystemRemove.png" alt="Alt text" >
 
 
-        **!!! if your file system contain a NFS share , it will not be deleted !!!**
-        <img src="Reademe_images/filesystemremoveerror.png" alt="Alt text" >
+
 
 
 
 3. ### HOST API's
-    - ##### /Hosts
+    - ##### /Hosts 
         it will show you all your hosts details.
         <img src="Reademe_images/hostdetails.png" alt="Alt text" >
 
-    - ##### /Hosts/add
-        it will open a new page for you to create a new host.
-        <img src="Reademe_images/hostadd.png" alt="Alt text" >
+    - ##### /Hosts/  
+        it will open a new page for you to create a new host.you can set ip address with netmask or single ip.
+        **single ip**
+        <img src="Reademe_images/hostAddSingle.png" alt="Alt text" >
 
-    - ##### /Host/host name/remove
+        **range ip**
+        <img src="Reademe_images/hostAddRange.png" alt="Alt text" >
+
+    - ##### /Host/<host name>  
         this api remvoe the pool you want.
-        <img src="Reademe_images/hostremove.png" alt="Alt text" >
+        <img src="Reademe_images/hostRemove.png" alt="Alt text" >
 
 
 
 
 
 4. ### NFS SHARE API's
-    - ##### /NfsShares
+    - ##### /NfsShares 
         it will show you all your nfs shares details.
         <img src="Reademe_images/nfssharedetails.png" alt="Alt text" >
 
-    - ##### /NfsShares/add
+    - ##### /NfsShares/  
         it will open a new page for you to create a new nfs share.
-        <img src="Reademe_images/nfsshareadd.png" alt="Alt text" >
+        <img src="Reademe_images/nfsShareAdd.png" alt="Alt text" >
         
-    - ##### /NfsShares/nfs share name/remove
+    - ##### /NfsShares/<nfs share name>  
         this api remvoe the pool you want.
-        <img src="Reademe_images/nfsshareremove.png" alt="Alt text" >
+        <img src="Reademe_images/nfsShareRemove.png" alt="Alt text" >
 

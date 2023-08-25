@@ -1,9 +1,8 @@
 from django.urls import path 
-from .views import *
+from .views import full_details , specifies_details
 
 app_name = 'NfsShare'
 urlpatterns = [
-    path('' , details , name='details'),
-    path('add' , add , name='add'),
-    path('<str:nfsname>/remove' , remove , name='remove'),
+    path('' , full_details , name='details'),
+    path('<str:nfsname>' , specifies_details , name='remove'),
 ]
