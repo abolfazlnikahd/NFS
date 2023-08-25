@@ -73,10 +73,11 @@ This project have to run on **ubuntu** also as a **root user**.
 
     - ##### /Hosts/  
         it will open a new page for you to create a new host.you can set ip address with netmask or single ip.
-        **single ip**
+        
+        - single ip
         <img src="Reademe_images/hostAddSingle.png" alt="Alt text" >
 
-        **range ip**
+        - range ip
         <img src="Reademe_images/hostAddRange.png" alt="Alt text" >
 
     - ##### /Host/<host name>  
