@@ -1,5 +1,5 @@
 # What is the project
-This project is for people who whant to share a directory or file with other people over a network easily.
+This project is for people who want to share a directory or file with other people over a network easily.
 it will help you from **mapping physical block devices** to **sharing** it.
 The overall structure of the project is very easy.
 ### first step is  **POOL**
